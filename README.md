@@ -1,4 +1,4 @@
-# crystal-reconstruct
+# GROMACS Crystal Reconstructing Program
 
 ## FIRST STAGE:
 Builds the initial crystal structure from a given molecule.
