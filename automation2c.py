@@ -1,4 +1,4 @@
-# FIRST STAGE: Building Initial Crystal Structure
+# SECOND STAGE: Adding Molecules to Fill the Crystal Structure
 
 import subprocess
 import time
@@ -99,44 +99,17 @@ def howmanyadded():
             addedm = int(line.split()[1])
     return addedm
 
-i = 2
-
-while True:
-    no_mol = no_molecule(file, residue)
-    top(file, no_mol, residue)
+for i in range(2):
+    no_mol=no_molecule(file,residue)
+    top(file, no_mol,residue)
     time.sleep(5)
-    make_sh_file(
-        'gmx_mpi grompp -f minim.mdp -c ' + file + '.gro -r ' + file + '.gro -p ' + file + '.top -o em.tpr -maxwarn 4')
+    make_sh_file('gmx_mpi grompp -f minim.mdp -c '+file+'.gro -r '+file+'.gro -p '+file+'.top -o em.tpr -maxwarn 4')
     time.sleep(5)
     make_sh_file('mpirun gmx_mpi mdrun -v -deffnm em -ntomp 1')
     time.sleep(5)
-    make_sh_file('gmx_mpi grompp -f nvt.mdp -c em.gro -r em.gro -p ' + file + '.top -o nvt.tpr -maxwarn 3')
+    make_sh_file('gmx_mpi grompp -f nvt4.mdp -c em.gro -r em.gro -p '+file+'.top -o nvt4.tpr -maxwarn 3')
     time.sleep(5)
-    make_sh_file('mpirun gmx_mpi mdrun -v -deffnm nvt -ntomp 1')
+    make_sh_file('mpirun gmx_mpi mdrun -v -deffnm nvt4 -ntomp 1')
     time.sleep(5)
-    make_sh_file('gmx_mpi insert-molecules -f nvt.gro -ci ' + residue + '.gro -nmol 10000 -rot xyz -o ' + file + '.gro')
+    make_sh_file('gmx_mpi insert-molecules -f nvt4.gro -ci '+residue+'.gro -nmol 10000 -rot xyz -o '+file+'.gro')
     time.sleep(5)
-
-    i = howmanyadded()
-
-    if i <=1 :
-        no_mol = no_molecule(file, residue)
-        top(file, no_mol, residue)
-        time.sleep(5)
-        make_sh_file(
-            'gmx_mpi grompp -f minim.mdp -c ' + file + '.gro -r ' + file + '.gro -p ' + file + '.top -o em.tpr -maxwarn 4')
-        time.sleep(5)
-        make_sh_file('mpirun gmx_mpi mdrun -v -deffnm em -ntomp 1')
-        time.sleep(5)
-        make_sh_file('gmx_mpi grompp -f nvt2.mdp -c em.gro -r em.gro -p ' + file + '.top -o nvt2.tpr -maxwarn 3')
-        time.sleep(5)
-        make_sh_file('mpirun gmx_mpi mdrun -v -deffnm nvt2 -ntomp 1')
-        time.sleep(5)
-        make_sh_file(
-            'gmx_mpi insert-molecules -f nvt.gro -ci ' + residue + '.gro -nmol 10000 -rot xyz -o ' + file + '.gro')
-        time.sleep(5)
-
-        i = howmanyadded()
-
-        if i <= 1:
-            break
